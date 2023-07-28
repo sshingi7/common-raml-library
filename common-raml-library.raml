@@ -1,0 +1,239 @@
+#%RAML 1.0 Library
+
+usage: This library serves as a valuable resource for implementing common response messages as traits, enforcing the security scheme of client ID in headers, and defining resource types that can be dynamically set as JSON/XML.
+
+types:
+  Error:
+    type: object
+    properties:
+      statusCode:
+        type: number
+        description: 'HTTP status code'
+      errorType: 
+        type: string
+        description: 'Short description of error message'
+        required: false
+      errorMessage:
+        type: string
+        description: 'Detailed description of error message'
+        required: false
+      timestamp:
+        type: string
+        description: 'Time of error'
+      transactionId:
+        type: string
+        description: '123-124-2313-235'
+  healthCheck:
+    type: object
+    displayName: Success Response
+    description: This type defines the success healthcheck response
+    properties:
+      status: 
+        type: string
+        example: "OK"
+      Timestamp:
+        type: string
+        example: "2021-12-22T11:54:33.991+05:30"
+
+
+traits:
+  mandatoryHeaders:
+    headers:
+      client_id:
+        type: string
+        pattern: ^[a-zA-Z0-9-]+$
+        required: true
+      client_secret:
+        type: string
+        pattern: ^[a-zA-Z0-9-]+$
+        required: true
+      transactionId:
+        type: string
+        pattern: ^[a-zA-Z0-9-]+$
+        required: true
+  errorResponses:
+    responses:
+      400:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 400,
+                "errorType": "Bad Request",
+                "errorMessage": "Invalid Input, Please check the input",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      401:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 401,
+                "errorType": "Unauthorized",
+                "errorMessage": "Please provide correct authentication details",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      403:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 403,
+                "errorType": "Forbidden",
+                "errorMessage": "Please provide check your permissions",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      404:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 404,
+                "errorType": "Not Found",
+                "errorMessage": "The requested resource could not be found",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      405:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 405,
+                "errorType": "Method not allowed",
+                "errorMessage": "The requested method is not supported",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      406:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 406,
+                "errorType": "Not Acceptable",
+                "errorMessage": "Please check again, issue client side",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      415:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 415,
+                "errorType": "Unsupported Media ",
+                "errorMessage": "Please check input data type",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      500:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 500,
+                "errorType": "Server Error",
+                "errorMessage": "The application has encountered a internal server error",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+      501:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 501,
+                "errorType": "NOT_IMPLEMENTED_EXCP",
+                "errorMessage": "This method is not implemented on this server",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+            
+      503:
+        body:
+          application/json:
+            type: Error
+            example: |
+              {
+                "statusCode": 503,
+                "errorType": "Service Unavailable",
+                "errorMessage": "Service is unavailable, Please check after some time",
+                "timestamp": "2021-12-22T11:54:33.991+05:30",
+                "transactionId": "1234"
+              }
+
+resourceTypes:
+  collection:
+    get?:
+      is: [errorResponses , mandatoryHeaders]
+      description: Get a <<SuccessResponseTypeName>> request 
+      responses:
+        200:
+          description: <<SuccessResponseTypeName>>
+          body:
+            application/json:
+              type: <<SuccessResponseTypeName>>                            
+    post?:
+      is: [errorResponses, mandatoryHeaders]
+      description: Creates a <<ObjectNamePOST>> request 
+      body:
+        application/json:
+          type: <<ObjectTypeNamePOST>>                      
+      responses:
+          200:
+            description: <<SuccessResponseTypeNamePOST>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePOST>>
+          201:
+            description: <<SuccessResponseTypeNamePOST>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePOST>>
+    patch?:
+      is: [errorResponses,mandatoryHeaders]
+      description: Patch a <<ObjectNamePATCH>> request 
+      body:
+          application/json:
+            type: <<ObjectTypeNamePATCH>>
+      responses:
+          200:
+            description: <<SuccessResponseTypeNamePATCH>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePATCH>>
+          204:
+            description: <<SuccessResponseTypeNamePATCH>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePATCH>> 
+    put?:
+      is: [errorResponses,mandatoryHeaders]
+      description: Update a <<ObjectNamePUT>> request 
+      body:
+          application/json:
+            type: <<ObjectTypeNamePUT>>
+      responses:
+          200:
+            description: <<SuccessResponseTypeNamePUT>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePUT>>
+          204:
+            description: <<SuccessResponseTypeNamePUT>>
+            body: 
+                application/json:
+                  type: <<SuccessResponseTypeNamePUT>>
